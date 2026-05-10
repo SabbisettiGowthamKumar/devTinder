@@ -6,6 +6,17 @@ app.get("/user", (req, res) => {
   res.send({ firstname: "gowtham", lastname: "kumar" });
 });
 
+// ? means the preceding character is optional, so it will match both /abc and /ac
+app.get(/\/a(b)?c/, (req, res) => {
+  res.send({ firstname: "gowtham", lastname: "kumar" });
+});
+
+// :userID and :password are route parameters, it will match any value in that position and make it available in req.params
+app.get("/user/:userID/:password", (req, res) => {
+  console.log(req.params);
+  res.send({ firstname: "gowtham123", lastname: "kumar123" });
+});
+
 // post will match only the post http request method
 app.post("/user", (req, res) => {
   console.log("data received from client");

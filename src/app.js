@@ -6,13 +6,11 @@ const { connectDB } = require("./config/database");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 const app = express();
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "John",
-    lastName: "Doe",
-    emailId: "john@gmail.com",
-    password: "password1234",
-  });
+  const user = new User(req.body);
   try {
     await user.save();
     res.send("User created successfully");

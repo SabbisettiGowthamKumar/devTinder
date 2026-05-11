@@ -1,17 +1,34 @@
 const express = require("express");
+const dns = require("dns");
+const User = require("./models/user");
+const { connectDB } = require("./config/database");
+
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 const app = express();
 
-app.get("/getUserData", (req, res) => {
-  throw new Error("Something wuhfuhhasddnent wrong!");
-  res.send("User data");
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "John",
+    lastName: "Doe",
+    emailId: "john@gmail.com",
+    password: "password1234",
+  });
+  try {
+    await user.save();
+    res.send("User created successfully");
+  } catch (err) {
+    console.error("Error creating user", err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
-// common Error handling, always use 4 parameters to use it as an error handler
-app.use("/", (err, req, res, next) => {
-  console.log(err);
-  if (err) res.status(500).send("Bro Something went wrong...!");
-});
-
-app.listen(7777, () => {
-  console.log("server is running on port 7777");
-});
+connectDB()
+  .then(() => {
+    console.log("connected to database");
+    app.listen(7777, () => {
+      console.log("server is running on port 7777");
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to database", err);
+  });

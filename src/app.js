@@ -1,19 +1,15 @@
 const express = require("express");
 const app = express();
 
-let { adminAuth, userAuth } = require("./middlewares/auth");
-app.use("/admin", adminAuth);
-
-app.get("/admin/dashboard", (req, res) => {
-  res.send("Welcome to the admin dashboard!");
+app.get("/getUserData", (req, res) => {
+  throw new Error("Something wuhfuhhasddnent wrong!");
+  res.send("User data");
 });
 
-app.get("/user/login", (req, res) => {
-  res.send("user succesfully logged in!");
-});
-
-app.get("/user/profile", userAuth, (req, res) => {
-  res.send("Welcome to your profile!");
+// common Error handling, always use 4 parameters to use it as an error handler
+app.use("/", (err, req, res, next) => {
+  console.log(err);
+  if (err) res.status(500).send("Bro Something went wrong...!");
 });
 
 app.listen(7777, () => {

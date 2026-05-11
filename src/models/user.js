@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validate = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,39 +20,45 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate(value) {
+        if (!validate.isEmail(value)) {
+          throw new Error("Invalid email format" + value);
+        }
+      },
     },
     password: {
       type: String,
       required: true,
-      match: [
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "Password must contain at least one lowercase, one uppercase, one number, and one special character (@$!%*?&). Minimum 8 characters.",
-      ],
-    },
-    age: {
-      type: Number,
-      min: 18,
-      max: 100,
-    },
-    gender: {
-      type: String,
       validate(value) {
-        if (["male", "female", "other"].indexOf(value) === -1) {
-          throw new Error("Invalid gender value");
+        if (!validate.isStrongPassword(value)) {
+          throw new Error("ENter a Strong password:" + value);
         }
       },
-    },
-    photoUrl: {
-      type: String,
-    },
-    about: {
-      type: String,
-      default: "This is default about section",
-      minLength: 10,
-      maxLength: 500,
-    },
-    skills: {
-      type: [String],
+      age: {
+        type: Number,
+        min: 18,
+        max: 100,
+      },
+      gender: {
+        type: String,
+        validate(value) {
+          if (["male", "female", "other"].indexOf(value) === -1) {
+            throw new Error("Invalid gender value");
+          }
+        },
+      },
+      photoUrl: {
+        type: String,
+      },
+      about: {
+        type: String,
+        default: "This is default about section",
+        minLength: 10,
+        maxLength: 500,
+      },
+      skills: {
+        type: [String],
+      },
     },
   },
   { timestamps: true },

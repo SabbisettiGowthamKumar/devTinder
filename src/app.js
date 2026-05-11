@@ -51,9 +51,22 @@ app.delete("/deleteUser", async (req, res) => {
   }
 });
 
-app.patch("/updateUser", async (req, res) => {
+app.patch("/updateUser/:userID", async (req, res) => {
+  const userID = req.params.userID;
   try {
-    const userID = req.body.userID;
+    const ALLOWED_UPDATES = ["photoURL", "about", "gender", "age", "skills"];
+    const isUpdateAllowed = Object.keys(req.body).every((update) =>
+      ALLOWED_UPDATES.includes(update),
+    );
+
+    if (!isUpdateAllowed) {
+      return res.status(400).send("Invalid updates");
+    }
+
+    if (req.body.skills.length > 10) {
+      throw new Error("Skills should be less than 10");
+    }
+
     await User.findByIdAndUpdate(userID, req.body, { runValidators: true });
     res.send("User updated successfully");
   } catch (err) {

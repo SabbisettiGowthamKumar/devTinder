@@ -16,7 +16,7 @@ app.post("/signup", async (req, res) => {
     res.send("User created successfully");
   } catch (err) {
     console.error("Error creating user", err);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error" + err);
   }
 });
 
@@ -54,17 +54,18 @@ app.delete("/deleteUser", async (req, res) => {
 app.patch("/updateUser", async (req, res) => {
   try {
     const userID = req.body.userID;
-    await User.findByIdAndUpdate(userID, req.body);
+    await User.findByIdAndUpdate(userID, req.body, { runValidators: true });
     res.send("User updated successfully");
   } catch (err) {
     console.error("Error deleting user", err);
-    res.status(404).send("Something went wrong");
+    res.status(404).send("Something went wrong" + err);
   }
 });
 
 connectDB()
   .then(() => {
     console.log("connected to database");
+    //await User.syncIndexes();
     app.listen(7777, () => {
       console.log("server is running on port 7777");
     });

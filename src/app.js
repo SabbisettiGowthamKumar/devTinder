@@ -6,6 +6,7 @@ const { connectDB } = require("./config/database");
 const { validateSignUpData } = require("./utils/validation");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 const app = express();
@@ -47,41 +48,28 @@ app.post("/login", async (req, res) => {
     }
     console.log(password, user.password);
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = user.validatePassword(password);
 
     if (!isPasswordValid) {
       throw new Error("Invalid credentials");
     } else {
       // generate a JWT token with user ID as payload and a secret key
-      const token = await jwt.sign({ _id: user._id }, "Dev@Tinder$800");
-      console.log(token);
+      const token = await user.getJWT();
 
       // add the token to cookie and send the response back to the client
       res.cookie("token", token);
-      res.send("Login successful");
+      res.send("Login successful", token);
     }
   } catch (err) {
     res.status(404).send("ERROR:" + err.message);
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
+  // userAuth middleware will run and gets the user details
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("No token found");
-    }
+    const user = req.user;
 
-    const decidedMessage = await jwt.verify(token, "Dev@Tinder$800");
-    const { _id } = decidedMessage;
-
-    const user = await User.findById(_id);
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    console.log("User ID from token:", _id);
     res.send(user);
   } catch (err) {
     console.error("Error fetching user profile", err);

@@ -1,21 +1,23 @@
-let adminAuth = (req, res, next) => {
-  let auth = true; // This is just a placeholder. In a real application, you would check the user's authentication status.
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+let userAuth = async (req, res, next) => {
+  try {
+    const { token } = req.cookies;
+    if (!token) {
+      throw new Error("token not valid");
+    }
+    const decodedObj = await jwt.verify(token, "Dev@Tinder$800");
+    const { _id } = decodedObj;
 
-  if (auth) {
-    next(); // If the user is authenticated, proceed to the next middleware or route handler.
-  } else {
-    res.status(401).send("Unauthorized");
-  }
-};
-
-let userAuth = (req, res, next) => {
-  let auth = true;
-
-  if (auth) {
+    const user = await User.findById(_id);
+    req.user = user;
+    if (!user) {
+      throw new Error("User not found");
+    }
     next();
-  } else {
-    res.status(401).send("Unauthorized");
+  } catch (err) {
+    res.status(400).send("ERROR:" + err.message);
   }
 };
 
-module.exports = { adminAuth, userAuth };
+module.exports = { userAuth };

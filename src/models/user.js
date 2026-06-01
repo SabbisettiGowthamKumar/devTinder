@@ -36,31 +36,31 @@ const userSchema = new mongoose.Schema(
           throw new Error("ENter a Strong password:" + value);
         }
       },
-      age: {
-        type: Number,
-        min: 18,
-        max: 100,
+    },
+    age: {
+      type: Number,
+      min: 18,
+      max: 100,
+    },
+    gender: {
+      type: String,
+      validate(value) {
+        if (["male", "female", "other"].indexOf(value) === -1) {
+          throw new Error("Invalid gender value");
+        }
       },
-      gender: {
-        type: String,
-        validate(value) {
-          if (["male", "female", "other"].indexOf(value) === -1) {
-            throw new Error("Invalid gender value");
-          }
-        },
-      },
-      photoUrl: {
-        type: String,
-      },
-      about: {
-        type: String,
-        default: "This is default about section",
-        minLength: 10,
-        maxLength: 500,
-      },
-      skills: {
-        type: [String],
-      },
+    },
+    photoUrl: {
+      type: String,
+    },
+    about: {
+      type: String,
+      default: "This is default about section",
+      minLength: 10,
+      maxLength: 500,
+    },
+    skills: {
+      type: [String],
     },
   },
   { timestamps: true },
@@ -83,7 +83,7 @@ userSchema.methods.validatePassword = async function (passwordInputByUser) {
     passwordInputByUser,
     passwordHash,
   );
-
+  console.log(isPasswordValid);
   return isPasswordValid;
 };
 module.exports = mongoose.model("User", userSchema);

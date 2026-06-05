@@ -24,3 +24,16 @@
 - GET /user/connections
 - GET /user/requests/received
 - GET /user/feed
+
+### my notes
+
+awsVM connect command -
+process.env.AWS_CONNECTION_SECRET
+
+sudo apt update
+
+sudo apt install nginx
+
+sudo systemctl start nginx
+
+sudo systemctl enable nginx

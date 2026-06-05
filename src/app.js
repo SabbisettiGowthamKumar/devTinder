@@ -1,12 +1,14 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const dns = require("dns");
+const cors = require("cors");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
-
+require("dotenv").config();
 const { connectDB } = require("./config/database");
 
 const app = express();
 
+app.use(cors());
 // Middleware to parse JSON bodies and cookies (must come before routes)
 app.use(express.json());
 app.use(cookieParser());
@@ -25,7 +27,7 @@ connectDB()
   .then(() => {
     console.log("connected to database");
     //await User.syncIndexes();
-    app.listen(7777, () => {
+    app.listen(process.env.PORT, () => {
       console.log("server is running on port 7777");
     });
   })
